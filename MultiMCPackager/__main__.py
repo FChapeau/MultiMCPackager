@@ -1,6 +1,7 @@
 import click
 import pathlib
 import shutil
+from MultiMCPackager.instance import Instance
 
 
 @click.group()
@@ -25,13 +26,18 @@ def package(ctx, server, instancepathstr, output):
     outputpath.mkdir(exist_ok=True)
     (outputpath / "mods").mkdir(exist_ok=True)
 
-    for child in (instancepath / ".minecraft"/ "mods").glob("*.jar"):
-        if not (server and "clientonly" in child.name):
-            shutil.copyfile(child, outputpath / "mods" / child.name)
+    click.echo("Copying mods")
+    with click.progressbar(iterable=(instancepath / ".minecraft"/ "mods").glob("*.jar")) as bar:
+        for child in bar:
+            if not (server and "clientonly" in child.name):
+                shutil.copyfile(child, outputpath / "mods" / child.name)
 
+    click.echo("Copying config")
     if not (outputpath / "config").exists():
         shutil.copytree(instancepath / ".minecraft" / "config", outputpath / "config", )
 
+    instance = Instance(instancepath)
+    print(instance.name)
 
 if __name__ == "__main__":
     main()
