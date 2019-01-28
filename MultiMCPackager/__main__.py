@@ -38,6 +38,8 @@ def package(ctx, server, instancepathstr, output):
 
     instance = Instance(instancepath)
     print(instance.name)
+    print(instance.forge_version)
+    print(instance.minecraft_version)
 
 if __name__ == "__main__":
     main()
