@@ -1,6 +1,7 @@
 import click
 import pathlib
 import shutil
+import sys
 from MultiMCPackager.instance import Instance
 
 
@@ -20,8 +21,8 @@ def package(ctx, server, instancepathstr, output):
     outputpath = pathlib.Path(output)
 
     if not (instancepath / "instance.cfg").exists():
-        # TODO find more elegant way to abort program execution
-        raise Exception("Not a MultiMC Instance")
+        click.echo("This is not a MultiMC instance")
+        sys.exit(1)
 
     outputpath.mkdir(exist_ok=True)
     (outputpath / "mods").mkdir(exist_ok=True)
@@ -40,6 +41,7 @@ def package(ctx, server, instancepathstr, output):
     print(instance.name)
     print(instance.forge_version)
     print(instance.minecraft_version)
+
 
 if __name__ == "__main__":
     main()

@@ -20,7 +20,7 @@ class Mod(object):
                         print(child)
 
 
-class ModMetadata(object, dict):
+class ModMetadata(object):
     def __init__(self, info: dict):
         self.name = info.get("name")
         self.modid = info.get("modid")
