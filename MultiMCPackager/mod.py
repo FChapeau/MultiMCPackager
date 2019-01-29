@@ -9,15 +9,19 @@ class Mod(object):
         self.modpath = path
         self.clientonly = "clientonly" in path.name
         self.serveronly = "serveronly" in path.name
+        self.mods = list()
 
-        print(self.filename)
         with ZipFile(path) as modjar:
             if "mcmod.info" in modjar.namelist():
                 with modjar.open("mcmod.info", 'r') as metafile:
                     filecontents = metafile.read().decode("utf-8").replace("\n", "")
                     metadata = json.loads(filecontents)
+
+                    if "modList" in metadata:
+                        metadata = metadata.get("modList")
+
                     for child in metadata:
-                        print(child)
+                        self.mods.append(ModMetadata(child))
 
 
 class ModMetadata(object):

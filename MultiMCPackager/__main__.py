@@ -19,28 +19,22 @@ def main(ctx):
 def package(ctx, server, instancepathstr, output):
     instancepath = pathlib.Path(instancepathstr)
     outputpath = pathlib.Path(output)
+    outputpath.mkdir(exist_ok=True)
 
     if not (instancepath / "instance.cfg").exists():
         click.echo("This is not a MultiMC instance")
         sys.exit(1)
 
-    outputpath.mkdir(exist_ok=True)
-    (outputpath / "mods").mkdir(exist_ok=True)
-
-    click.echo("Copying mods")
-    with click.progressbar(iterable=(instancepath / ".minecraft"/ "mods").glob("*.jar")) as bar:
-        for child in bar:
-            if not (server and "clientonly" in child.name):
-                shutil.copyfile(child, outputpath / "mods" / child.name)
-
-    click.echo("Copying config")
-    if not (outputpath / "config").exists():
-        shutil.copytree(instancepath / ".minecraft" / "config", outputpath / "config", )
-
+    click.echo("Initializing MultiMC instance")
     instance = Instance(instancepath)
-    print(instance.name)
-    print(instance.forge_version)
-    print(instance.minecraft_version)
+
+    instance.copy_mods(outputpath/"mods", server)
+    instance.copy_config(outputpath/"config")
+
+    if server:
+        instance.fetch_forge(outputpath/"forge.jar")
+    else:
+        instance.fetch_forge(outputpath/"bin"/"modpack.jar")
 
 
 if __name__ == "__main__":
