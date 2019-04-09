@@ -22,8 +22,9 @@ class Instance(object):
             lines = f.readlines()
             self.config = dict()
             for line in lines:
-                key, value = line.split("=")
-                self.config[key] = value.replace("\n", "")
+                if "JvmArgs=" not in line:
+                    key, value = line.split("=")
+                    self.config[key] = value.replace("\n", "")
 
         with open(self.instance_path / "mmc-pack.json") as f:
             pack = json.load(f)

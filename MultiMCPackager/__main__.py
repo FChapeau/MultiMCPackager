@@ -17,11 +17,16 @@ def main(ctx):
               help="Package output dir",
               default="./package",
               type=click.Path(exists=False, file_okay=False, resolve_path=True))
+@click.option("--eula",
+              help="Wether to include the accepted EULA by default or not",
+              default=False,
+              is_flag=True)
 @click.argument("instancepathstr", metavar="INSTANCE", nargs=1, type=click.Path(exists=True, file_okay=False, resolve_path=True))
 @click.pass_context
-def package(ctx, server, instancepathstr, output):
+def package(ctx, server, instancepathstr, output, eula):
     """
     Packages a MultiMC instance into a package deployable onto a server or to Technic Launcher or other platform
+    :param eula: Wether to include a file to accept the EULA or not
     :param ctx: Click context
     :param server: Wether the package is client-side or not
     :param instancepathstr: Path to the instance, as string
@@ -44,14 +49,13 @@ def package(ctx, server, instancepathstr, output):
 
     if server:
         instance.fetch_forge(outputpath/"forge.jar")
+        instance.fetch_minecraft(outputpath / "minecraft.jar")
+        if eula:
+            click.echo("Accepting EULA")
+            with open(outputpath/"eula.txt", "w") as f:
+                f.write("eula=true")
     else:
         instance.fetch_forge(outputpath/"bin"/"modpack.jar")
-
-    if server:
-        instance.fetch_minecraft(outputpath/"minecraft.jar")
-
-    #TODO Add argument to accept EULA
-    #TODO Generate startup script if server
 
 
 if __name__ == "__main__":
